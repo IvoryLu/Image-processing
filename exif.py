@@ -26,6 +26,7 @@ for ele in data.filepath:
 
     note = []
     
+    #Makernote for Reconyx
     #Sequence 14 
     #Temperature 40 
     #Moonphase 36
