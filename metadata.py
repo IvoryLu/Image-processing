@@ -21,7 +21,7 @@ def metadata(curr_dir, filename, images):
     for col in dataset.columns:
         print(col)
         
-    filepath = lambda row: curr_dir + "\\" + row.File \
+    filepath = lambda row: curr_dir + "\\" + str(row.File) \
             if pd.isnull(row.RelativePath) \
             else curr_dir + "\\" + str(row.RelativePath) + "\\" + str(row.File)
             
@@ -35,9 +35,15 @@ def metadata(curr_dir, filename, images):
         tags = exifread.process_file(f)
          
         note = []
-        
-        for item in tags['EXIF MakerNote'].values:
+        camera_name = []
+        for i, item in enumerate(tags['EXIF MakerNote'].values):
                 note.append(item)
+                byte_item = item.to_bytes(1,byteorder='big')
+                if i >= 86 and i <= 100 and byte_item != b'\x00':
+                    camera_name.append(byte_item.decode("latin-1"))
+#                    print(byte_item.decode("latin-1"))
+        camera_name = ''.join(camera_name)
+#        print(camera_name)
 
         csv_index = dataset.index[dataset['Filepath'] == images[index]].tolist()
         stdout.write("\r%s" % (csv_index))
@@ -105,7 +111,7 @@ def metadata(curr_dir, filename, images):
         moonphase = ['New', 'New Crescent', 'First Quater', 'Waxing Gibbous',
                      'Full', 'Waning Gibbous', 'Last Quater', 'Old Crescent']                
         dataset.loc[csv_index[0],'Moonphase'] = moonphase[note[36]]
-        
+        dataset.loc[csv_index[0],'Camera'] = camera_name
         dataset.loc[csv_index[0],'ISOSpeedRatings']= tags['EXIF ISOSpeedRatings']
         dataset.loc[csv_index[0],'ImageLength'] = tags['EXIF ExifImageLength']
         dataset.loc[csv_index[0],'ImageWidth'] = tags['EXIF ExifImageWidth']
@@ -121,7 +127,7 @@ def metadata(curr_dir, filename, images):
         dataset.loc[csv_index[0],'Saturation'] = Saturation
         dataset.loc[csv_index[0],'Contrast'] = Contrast
         dataset.loc[csv_index[0],'Sharpness'] = Sharpness
-    
+        f.close()
     
     
     dataset = dataset.drop(['Filepath'],axis = 1)
@@ -166,6 +172,7 @@ def main():
         if filename.find("TimelapseData.csv") == -1:
             continue
         else:
+            print("Start Processing ...")
             metadata(curr_dir, filename, images)
             
     if filename == 0: 
@@ -173,4 +180,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+
