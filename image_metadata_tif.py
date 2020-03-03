@@ -3,6 +3,8 @@
 Created on Mon Nov 18 15:25:56 2019
 
 @author: Ivory.Lu
+
+Read image metadata information in image properties
 """
 
 import PIL.Image
@@ -11,6 +13,7 @@ import pandas as pd
 from PIL.ExifTags import TAGS
 import exifread
 import tifffile
+import imagecodecs._imagecodecs_lite
 
 curr_dir = os.getcwd()
 
