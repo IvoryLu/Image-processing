@@ -7,6 +7,8 @@ Created on Fri Nov 29 12:45:34 2019
 import os
 import exiftool
 import pandas as pd
+import subprocess
+
 
 curr_dir = os.getcwd()
 
@@ -25,7 +27,7 @@ layer = 0
 
 for root, dirs, files in os.walk(curr_dir):
     for file in files:
-        if file.endswith(".mov") or file.endswith(".mp4") or file.endswith(".wmv") or file.endswith(".MOV") or file.endswith(".MP4"):
+        if file.endswith(".mov") or file.endswith(".mp4") or file.endswith(".wmv") or file.endswith(".MOV") or file.endswith(".MP4") or file.endswith(".avi") or file.endswith(".AVI") or file.endswith(".mkv"):
             fileName.append(file)
             counter = counter + 1 
             
@@ -37,7 +39,7 @@ for root, dirs, files in os.walk(curr_dir):
                 layer = video.count('\\')
             formatt.append(os.path.splitext(file)[1])
             
-            with exiftool.ExifTool(r'C:\Users\Ivory.Lu\exiftool\exiftool(-k).exe') as et:
+            with exiftool.ExifTool('exiftool.exe') as et:
                 metadata = et.get_metadata(video)
                 
             if metadata.get('QuickTime:Category'):
